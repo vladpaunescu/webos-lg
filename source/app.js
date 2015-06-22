@@ -5,11 +5,11 @@
 */
 
 enyo.kind({
-	name: "myapp.Application",
+	name: "flickr.Application",
 	kind: "enyo.Application",
-	view: "myapp.MainView"
+	view: "flickr.MainView"
 });
 
 enyo.ready(function () {
-	new myapp.Application({name: "app"});
+	new flickr.Application({name: "app"});
 });
