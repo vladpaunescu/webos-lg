@@ -7,11 +7,18 @@
 enyo.kind({
     name: "flickr.MainView",
     classes: "moon enyo-fit",
+    handlers: {
+        onRequestPushPanel: "pushPanel"
+    },
     components: [
         {kind: "moon.Panels", classes: "enyo-fit", pattern: "alwaysviewing", popOnBack: true, components: [
             {kind: "flickr.SearchPanel"}
         ]}
-    ]
+    ],
+
+    pushPanel: function(inSender, inEvent) {
+        this.$.panels.pushPanel(inEvent.panel);
+    }
 });
 
 
@@ -24,6 +31,15 @@ enyo.kind({
     handlers: {
         onInputHeaderChange: "search"
     },
+
+	headerComponents: [
+        {kind: "moon.Spinner", content: "Loading...", name: "spinner"}
+    ],
+
+    bindings: [
+        {from: ".photos.isFetching", to:".$.spinner.showing"}
+    ],
+
  	components: [
         {
         	kind: "moon.DataGridList", fit: true, name: "resultList", 
@@ -40,6 +56,10 @@ enyo.kind({
         ]}
     ],
 
+    search: function(inSender, inEvent) {
+        this.$.resultList.collection.set("searchText", inEvent.originator.get("value"));
+    }
+
   	create: function() {
         this.inherited(arguments);
         this.set("photos", new enyo.Collection([
@@ -54,7 +74,21 @@ enyo.kind({
         {from: ".photos", to: ".$.resultList.collection"}
     ],
 
-    search: function(inSender, inEvent) {
-        alert(inEvent.originator.get("value"));
+    create: function() {
+    	this.inherited(arguments);
+        this.set("photos", new flickr.SearchCollection());
     }
+});
+
+enyo.kind({
+    name: "flickr.DetailPanel",
+    kind: "moon.Panel",
+    layoutKind: "FittableColumnsLayout",
+    components: [
+        {kind: "moon.Image", fit: true, sizing: "contain", name: "image"}
+    ],
+    bindings: [
+        {from: ".model.title", to: ".title"},
+        {from: ".model.original", to: ".$.image.src"}
+    ]
 });
